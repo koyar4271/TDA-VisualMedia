@@ -1,3 +1,75 @@
+## About This Fork
+
+This repository is a fork of the official implementation of
+[Efficient Test-Time Adaptation of Vision-Language Models](https://github.com/kdiAAA/TDA)
+(CVPR 2024).
+
+In addition to the original TDA implementation, this fork contains
+experiments conducted for a Visual Media course project. The added
+experiments analyze failure cases caused by the dynamic cache used in
+TDA and evaluate a simple modification for reducing cache contamination.
+
+The following two failure cases are investigated:
+
+1. **Adverse Test Ordering**  
+   This experiment studies whether confidently misclassified samples
+   appearing at the beginning of the test stream contaminate the
+   Positive Cache and reduce the benefit of TDA.
+
+2. **Unknown-Class Contamination**  
+   This experiment inserts images outside the known class set into the
+   test stream and analyzes their effects on cache admission, cache
+   contamination, recovery, and subsequent known-class accuracy.
+
+This fork also implements **Cache-Specific Selective Admission**, which
+uses prediction entropy and maximum image-text similarity to determine
+whether a test sample should be admitted to the Positive or Negative
+Cache.
+
+These additions are part of a course project and are not included in
+the original CVPR 2024 implementation.
+
+## Added Files
+
+| Path | Description |
+|---|---|
+| `experiments/precompute_features.py` | Precomputes CLIP features, predictions, labels, and entropy values for the known-class Caltech101 test set. |
+| `experiments/run_adverse_ordering.py` | Evaluates random, easy-first, uncertain-first, and confidently-wrong-first test-stream orderings. It records accuracy, Positive Cache purity, incorrect cache entries, and entry lifetimes. |
+| `experiments/precompute_unknown_features.py` | Precomputes CLIP features for `BACKGROUND_Google`, which is used as the unknown-image source. |
+| `experiments/run_unknown_contamination.py` | Inserts an unknown-image block between a known prefix and known suffix, and evaluates paired accuracy differences, cache admission, contamination, and recovery. |
+| `experiments/run_selective_admission.py` | Evaluates Cache-Specific Selective Admission under clean and unknown-contaminated test streams. |
+| `notebooks/TDA_VisualMedia.ipynb` | Provides an end-to-end Google Colab workflow for environment setup, feature precomputation, failure analysis, and evaluation of the proposed modification. |
+
+## Experimental Scope
+
+The experiments in this fork use:
+
+- Dataset: Caltech101
+- Known classes: 100
+- Unknown-image source: `BACKGROUND_Google`
+- Backbone: CLIP-ResNet-50
+- Test-time batch size: 1
+- Environment: Google Colab with an NVIDIA Tesla T4
+- Random seeds: 5 seeds where applicable
+
+The adverse-ordering and unknown-contamination experiments are intended
+as controlled stress tests. The results do not establish that the same
+behavior necessarily occurs for every dataset, backbone, or unknown
+data source.
+
+## Google Colab Notebook
+
+The complete experimental workflow is available in:
+
+- [`notebooks/TDA_VisualMedia.ipynb`](notebooks/TDA_VisualMedia.ipynb)
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/koyar4271/TDA-VisualMedia/blob/main/notebooks/TDA_VisualMedia.ipynb)
+
+The notebook stores downloaded assets, precomputed features, and
+experiment outputs under:
+
+`MyDrive/VisualMedia/TDA`
+
 # Efficient Test-Time Adaptation of Vision-Language Models
 [![Website](https://img.shields.io/badge/Project-Website-87CEEB)](https://kdiaaa.github.io/tda/)
 [![paper](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](http://arxiv.org/abs/2403.18293)
